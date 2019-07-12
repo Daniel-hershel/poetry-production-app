@@ -4,26 +4,44 @@
     <h1> Poetry Writing Center </h1>
     <button id = "switch" @click="switchMode">Switch</button>
     </div>
- <transition
+  <transition
+     v-bind:css="false"
   v-on:enter="enter"
   v-on:leave="leave"
+  v-on:before-enter="beforeEnter"
   >
-    <div class = "listing" v-if="!editMode">
+<div class = "listing" v-if="!editMode">
+  <!-- Title -->
  <div v-for="poem in poems" :key="poem.id">
-      <div>  {{poem.title}}</div>
-        <div style="white-space: pre-line">{{poem.poem}}</div>
+      <div class = "title">  {{poem.title}}</div>
+      <button @click="stagePoem">Stage</button>
   </div>
+  <div id="stage">
+    Stage
+    </div>
+   <!-- Poem -->
+   <!-- <div v-for="poem in poems" :key="poem.id"> -->
+        <!-- <div style="white-space: pre-line">{{poem.poem}}</div> -->
+  <!-- </div> -->
     </div>
     </transition>
+     <transition
+ v-bind:css="false"
+  v-on:before-enter="beforeEnterEditor"
+  v-on:enter="enterEditor"
+  v-on:leave="leaveEditor"
+  >
+   
     <div class = "editor" v-if="editMode">
-    <input v-model="poemTitle" placeholder="Enter Poem Title Here" @focus="checkFocus" @blur="focusOut">
+    <input v-model="poemTitle" placeholder="Enter Poem Title Here" @focus="focusTitle" @blur="focusOut">
     <div style="white-space: pre-line">{{this.poemText}}</div>
     <textarea v-model= "poemText"> </textarea>
     <button @click="addPoem">Add Poem </button>
     </div>
+    </transition>
+
     </div>
 </template>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/velocity/1.2.3/velocity.min.js"></script>
 <script>
 import {poems} from '../firebase';
 import {db} from '../firebase';
@@ -35,7 +53,7 @@ export default {
       poems: [],
       poemTitle: '',
       poemText: '',
-      editMode: false
+      editMode: true
      }
   },
     firestore() {
@@ -47,33 +65,46 @@ export default {
       
   },
   methods:{
-      enter(){
-          console.log('entering');
+    stagePoem(poem){
+      console.log(poem)
+    },
+    enterEditor(el,done){
+          Velocity(el, {opacity:1,rotateX: [0,-90],}, {delay:1400,duration:1200, complete: done})
+          console.log('editor entering')
+    },
+    leaveEditor(el, done){
+        console.log(el)
+        Velocity(el, {scale:.1,rotateX: [-90,0] }, {duration:1000, complete:done})
+    },
+      beforeEnter(el){
+          Velocity(el, {opacity: 0}, {duration:1})
+          console.log('before entering')
       },
-      leave(){
-          console.log('leaving');
+       beforeEnterEditor(el){
+          Velocity(el, {opacity: 0}, {duration:1})
+          console.log('before entering')
+      },
+      enter(el, done){
+          Velocity(el, {opacity:1,rotateX: [0,-90],}, {delay:1400,duration:1200, complete: done})
+          // Velocity(el, 'reverse')
+          console.log('poems entering')
+      },
+      leave(el, done){
+        Velocity(el, {scale:.1,rotateX: [-90,0] }, {duration:1200, complete:done})
       },
       switchMode(){
-          if(this.editMode){
-              this.editMode = false;
-
-          } else if(!this.editMode){
+        if(!this.editMode){
               this.editMode = true;
           console.log(this.editMode)
+          }   else if(this.editMode){
+              this.editMode = false;
 
           }
-
       },
-    focusOut(event){
-        console.log(event);
-    },
-checkFocus(){
-      let el = document.activeElement
-       Velocity(el, {height: '75px', width: '200px', borderBottomWidth: '+=2px', fontSize:'1.2em', marginBottom: '+=2em' }, { duration: 600 })
-      // animate border and size properties
-      // than how to animate when it goes out of focus
+      focusTitle(){
+        let el = document.activeElement
+        Velocity(el, {height: '75px', width: '200px', borderBottomWidth: '+=2px', fontSize:'1.2em', marginBottom: '+=2em' }, { duration: 600 })
       },
-
       focusOut(event){
       let el = event.target;
         Velocity(el, 'reverse')
@@ -109,6 +140,17 @@ body{
 
 }
 
+.listing{
+  display: grid;
+  grid-template-columns: 18vw 1fr;
+  grid-template-rows: minmax(200px, auto);
+}
+
+.title{
+  float: left;
+  height: 25px;
+  /* display:inline-block; */
+}
 #tester {
     display:grid;
     width: 95vw;
@@ -150,7 +192,7 @@ input:focus{
 
 textarea{
 height: 60vh;
-width: 650px;
+width: 85vw;
 margin: auto;
 background: #eeeeee;
 }
@@ -167,6 +209,11 @@ button {
     grid-gap: 1em;
     margin:auto;
     
+}
+
+textarea{
+width: 650px;
+
 }
 .editor > *{
 
