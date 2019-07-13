@@ -4,41 +4,51 @@
     <h1> Poetry Writing Center </h1>
     <button id = "switch" @click="switchMode">Switch</button>
     </div>
-  <transition
-     v-bind:css="false"
-  v-on:enter="enter"
-  v-on:leave="leave"
-  v-on:before-enter="beforeEnter"
-  >
-<div class = "listing" v-if="!editMode">
-  <!-- Title -->
- <div v-for="poem in poems" :key="poem.id">
-      <div class = "title">  {{poem.title}}</div>
-      <button @click="stagePoem">Stage</button>
-  </div>
-  <div id="stage">
-    Stage
-    </div>
-   <!-- Poem -->
-   <!-- <div v-for="poem in poems" :key="poem.id"> -->
-        <!-- <div style="white-space: pre-line">{{poem.poem}}</div> -->
-  <!-- </div> -->
-    </div>
-    </transition>
-     <transition
- v-bind:css="false"
+    <transition
+  mode= "out-in"
+  v-bind:css="false"
   v-on:before-enter="beforeEnterEditor"
   v-on:enter="enterEditor"
   v-on:leave="leaveEditor"
   >
-   
-    <div class = "editor" v-if="editMode">
+   <div class = "editorHolder" v-if="editMode">
+    <div class = "editor">
     <input v-model="poemTitle" placeholder="Enter Poem Title Here" @focus="focusTitle" @blur="focusOut">
     <div style="white-space: pre-line">{{this.poemText}}</div>
     <textarea v-model= "poemText"> </textarea>
     <button @click="addPoem">Add Poem </button>
     </div>
+    </div>
     </transition>
+  <transition
+  mode= "out-in"
+
+     v-bind:css="false"
+  v-on:enter="enter"
+  v-on:leave="leave"
+  v-on:before-enter="beforeEnter"
+  >
+  <div class = "listingHolder" v-if="!editMode">
+<div class = "listing">
+  <!-- Title -->
+ <div class = "titleHolder" v-for="poem in poems" :key="poem.id">
+      <div class = "title">  {{poem.title}}</div>
+      <button class="stagePoem" @click="stagePoem(poem)">Stage</button>
+  </div>
+  
+  </div>
+    <div id="stage">
+    Stage
+    </div>
+  </div>
+    </transition>
+
+
+   <!-- Poem -->
+   <!-- <div v-for="poem in poems" :key="poem.id"> -->
+        <!-- <div style="white-space: pre-line">{{poem.poem}}</div> -->
+  <!-- </div> -->
+
 
     </div>
 </template>
@@ -67,25 +77,29 @@ export default {
   methods:{
     stagePoem(poem){
       console.log(poem)
+      let stager = document.getElementById('stage');
+      stager.innerHTML = '';
+      stager.append(poem.poem)
     },
+    beforeEnterEditor(el){
+      el.style.opacity = 0;
+          // Velocity(el, {opacity: 0}, {duration:1})
+          console.log('before entering')
+      },
     enterEditor(el,done){
-          Velocity(el, {opacity:1,rotateX: [0,-90],}, {delay:1400,duration:1200, complete: done})
+          Velocity(el, {opacity:1,rotateX: [0,-90],}, {delay:1200,duration:1200, complete: done})
           console.log('editor entering')
     },
     leaveEditor(el, done){
         console.log(el)
-        Velocity(el, {scale:.1,rotateX: [-90,0] }, {duration:1000, complete:done})
+        Velocity(el, {scale:.1,rotateX: [-90,0] }, {duration:5000, complete:done})
     },
       beforeEnter(el){
-          Velocity(el, {opacity: 0}, {duration:1})
-          console.log('before entering')
+       el.style.opacity = 0;
       },
-       beforeEnterEditor(el){
-          Velocity(el, {opacity: 0}, {duration:1})
-          console.log('before entering')
-      },
+       
       enter(el, done){
-          Velocity(el, {opacity:1,rotateX: [0,-90],}, {delay:1400,duration:1200, complete: done})
+          Velocity(el, {opacity:1,rotateX: [0,-90],}, {delay:1200,duration:1200, complete: done})
           // Velocity(el, 'reverse')
           console.log('poems entering')
       },
@@ -137,28 +151,19 @@ body{
     font-size: 18px;
    text-align: center;
    color: #392f2f;
-
 }
 
-.listing{
-  display: grid;
-  grid-template-columns: 18vw 1fr;
-  grid-template-rows: minmax(200px, auto);
-}
-
-.title{
-  float: left;
-  height: 25px;
-  /* display:inline-block; */
-}
 #tester {
-    display:grid;
+    display: grid;
     width: 95vw;
-    grid-template-columns: 90vw;
+    grid-template-columns: 95vw;
     grid-template-rows: 18vh 70vh 1fr;
     margin:auto;
    background: #e6d3a7;
-
+}
+.editorHolder{
+  position:absolute;
+  top:20vh;
 }
 .editor{
   display:flex;
@@ -167,6 +172,29 @@ body{
    align-items: center;
   /* justify-content: center;  */
 }
+.listingHolder{
+  grid-template-columns: 20vw 75vw;
+
+}
+.listing{
+ 
+}
+.titleHolder{
+  display:grid;
+  grid-template-columns: 20vw;
+  grid-template-rows: minmax(80px, auto);
+   align-items: center;
+   border: 2px solid #444;
+   margin:1em;
+  /* justify-content: center;  */
+}
+.title{
+  /* float: left; */
+  /* height: 25px; */
+  /* display:inline-block; */
+}
+
+
 
 /* Input Elements*/
 input:focus,
@@ -196,21 +224,36 @@ width: 85vw;
 margin: auto;
 background: #eeeeee;
 }
-
-button {
-
+.stagePoem{
+  height: 50px;
+  background: #444;
+  color: #fffff8;
 }
-@media(min-width: 900px){
+
+@media(min-width: 1200px){
 #tester{
     display:grid;
-    width:900px;
-    grid-template-columns: 900px;
+    width:1200px;
+    grid-template-columns: 1200px;
     grid-template-rows: 18vh 70vh 1fr;
     grid-gap: 1em;
     margin:auto;
     
 }
 
+
+.listingHolder{
+ position:absolute;
+  top:20vh;
+  background:#eeeeee; 
+   display:grid;
+  grid-template-columns: 400px 800px;
+  grid-template-rows:70vh;
+  /* grid-template-rows: minmax(80px, auto); */
+   align-items: center;
+   border: 2px solid #444;
+   margin:auto;
+}
 textarea{
 width: 650px;
 
