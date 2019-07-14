@@ -13,8 +13,8 @@ export default new Router({
     // },
     {
       path: '/',
-      name: 'Editor',
-      component: ()=> import('../views/editorView.vue')
+      name: 'Creation Station',
+      component: ()=> import('../views/creationStation.vue')
     }
   ]
 })
