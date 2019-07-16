@@ -94,35 +94,7 @@ body{
   overflow:scroll;
 }
 
-/* Input Elements*/
-input:focus,
-select:focus,
-textarea:focus,
-button:focus {
-    outline: none;
-}
-input{
-   color: #392f2f;
-    height: 50px;
-    width: 250px;
-    text-align:center;
-    margin-bottom: 2.5em;
-    border:0px solid #444;
-    background: transparent;
-    font-size: 1.1em;
-}
 
-input:focus{
-
-    
-}
-
-textarea{
-height: 500px;
-width: 85vw;
-margin: auto;
-background: #eeeeee;
-}
 
 @width : 1150px;
 @media(min-width: @width){

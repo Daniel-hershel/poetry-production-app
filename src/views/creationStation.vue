@@ -26,7 +26,6 @@
   >
     <PoemsList 
     v-bind:poems="poems"
-    v-bind:edit="edit"
     v-if="!editMode">
 
     </PoemsList>
@@ -57,12 +56,7 @@ export default{
   },
     methods:{
     
-     edit(poem){
-            console.log(this.poemText)
-
-            // poems.child(poem['.key']).child('title').set()
-            // poems.child(poem['.key']).child('poem').set()
-        },
+   
     //  Transitions
 
     beforeEnterEditor(el){
